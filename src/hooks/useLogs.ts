@@ -42,7 +42,6 @@ export const useLogs = (session: Session | null) => {
         const { count, error } = await supabase
             .from('logs')
             .select('*', { count: 'exact', head: true });
-
         if (error) {
             console.error('Error fetching total count:', error);
             return false;
@@ -66,6 +65,7 @@ export const useLogs = (session: Session | null) => {
             console.error('Error fetching logs:', error);
         } else {
             setLogs(data ?? []);
+            setLoading(false)
             return {status: true, message: ""}
         }
         setLoading(false);

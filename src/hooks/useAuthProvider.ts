@@ -25,6 +25,7 @@ export const useAuthProvider = () => {
             console.log("Sign Out Error: ", error)
             return false;
         }
+        localStorage.removeItem("sb-chziasxekmfmmliuaqux-auth-token");
         return true;
     }
 
