@@ -16,11 +16,10 @@ const ArtifactForm = ({ close }: Props) => {
     const { register, handleSubmit, watch, setValue, upload } = useArtifactForm();
 
     const avatar = watch("avatar");
-    const avatar_shadow = watch("avatar_shadow");
 
     const onSubmit = (formData: ArtifactFormType) => {
-        const {avatar, avatar_shadow} = formData;
-        if(!avatar || !avatar_shadow) return;
+        const {avatar} = formData;
+        if(!avatar) return;
         setUploading(true);
         upload(formData).then(result => {
             setResponse(result);
@@ -54,21 +53,6 @@ const ArtifactForm = ({ close }: Props) => {
                                    onChange={event => {
                                        const files = event.target.files;
                                        if(files) setValue("avatar", files[0]);
-                                   }}
-                                   className="absolute top-[-50px] left-[-50px] w-[500px] h-[500px] cursor-pointer bg-transparent"/>
-                        </div>
-                    </div>
-                    <div className="flex flex-col">
-                        <label className="mb-2 text-center">Image Shadow</label>
-                        <div
-                            className="w-[150px] h-[150px] flex justify-center items-center bg-white border border-zinc-300 relative overflow-hidden cursor-pointer">
-                            {!avatar_shadow ? <FaRegImage className="w-[50px] h-[50px]"/> : (
-                                <img src={URL.createObjectURL(avatar_shadow)} className="w-full h-full"/>
-                            )}
-                            <input type="file"
-                                   onChange={event => {
-                                       const files = event.target.files;
-                                       if(files) setValue("avatar_shadow", files[0]);
                                    }}
                                    className="absolute top-[-50px] left-[-50px] w-[500px] h-[500px] cursor-pointer bg-transparent"/>
                         </div>
