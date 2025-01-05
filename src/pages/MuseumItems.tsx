@@ -51,9 +51,9 @@ const MuseumItems = () => {
             </div>
             {artifact && (
                 <div onClick={() => setArtifact(null)} className="w-full h-screen p-[50px] fixed top-0 left-0 flex justify-center items-center bg-black/80">
-                    <div className="h-full bg-white my-auto mx-auto overflow-hidden flex flex-col justify-center items-center" style={{aspectRatio: .5}}>
-                        <img src={artifact.avatar_url} className="object-contain" />
-                        <p>{artifact.name}</p>
+                    <div className="h-full bg-white my-auto mx-auto overflow-hidden flex flex-col justify-center items-center p-[10px]" style={{aspectRatio: .5}}>
+                        <img src={artifact.avatar_url} className="w-full h-full object-contain" />
+                        <p className="text-lg font-[500] mb-[20px]">{artifact.name}</p>
                         <p>{artifact.description}</p>
                     </div>
                 </div>

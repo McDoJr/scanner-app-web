@@ -39,15 +39,15 @@ const ArtifactForm = ({ close }: Props) => {
                 <input type="text" {...register("name")}
                        className="outline-none py-2 px-2 border border-zinc-300 rounded-md mb-5"/>
                 <label className="mb-2">Artifact Description</label>
-                <input type="text" {...register("description")}
-                       className="outline-none py-2 px-2 border border-zinc-300 rounded-md mb-5"/>
+                <textarea {...register("description")}
+                       className="min-h-[100px] outline-none py-2 px-2 border border-zinc-300 rounded-md mb-5"/>
                 <div className="flex justify-center gap-20">
                     <div className="flex flex-col">
                         <label className="mb-2 text-center">Image</label>
                         <div
                             className="w-[150px] h-[150px] flex justify-center items-center bg-white border border-zinc-300 relative overflow-hidden cursor-pointer">
                             {!avatar ? <FaRegImage className="w-[50px] h-[50px]"/> : (
-                                <img src={URL.createObjectURL(avatar)} className="w-full h-full"/>
+                                <img src={URL.createObjectURL(avatar)} className="w-full h-full object-contain"/>
                             )}
                             <input type="file"
                                    onChange={event => {
