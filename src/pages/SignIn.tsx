@@ -1,7 +1,7 @@
 import Logo from "../assets/logo.png";
 import {useSignIn} from "../hooks/useSignIn.ts";
 import {FaEnvelope, FaLock, FaRegEye, FaRegEyeSlash} from "react-icons/fa";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../context/authContext.ts";
 import {useNavigate} from "react-router-dom";
 import LoadingAnimation from "../components/LoadingAnimation.tsx";
@@ -14,7 +14,9 @@ const SignIn = () => {
     const { handleSubmit, onSubmit, register, errors, rules, loading } = useSignIn();
     const togglePassword = () => setHidden(prevState => !prevState);
 
-    if(!appLoading && session && session.user) navigate("/admin/items");
+    useEffect(() => {
+        if(!appLoading && session && session.user) navigate("/admin/items");
+    }, [appLoading, session]);
 
     return (
         <div className="w-full h-screen flex flex-col justify-center items-center bg-background">

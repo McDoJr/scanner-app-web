@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Session} from "@supabase/supabase-js";
 import {supabase} from "../../supabase/supabase.ts";
 import {ResponseType} from "./useSignIn.ts";
@@ -6,18 +6,17 @@ import {ResponseType} from "./useSignIn.ts";
 export const useLogs = (session: Session | null) => {
     const [logs, setLogs] = useState<LogType[]>([]);
     const [loading, setLoading] = useState(false);
-    const [pages, setPages] = useState<number[]>([]);
-    const [totalPages, setTotalPages] = useState(0);
-    const ITEMS_PER_PAGE = 10;
+    const [hasMore, setHasMore] = useState(false);
+    const mounted = useRef(false);
+    const ITEMS_PER_PAGE = 12;
 
     useEffect(() => {
         if(session) {
             const channel = session.user.id + "_logs_";
-            fetchTotalPages().then(result => {
-                if(result) {
-                    onLoadPage(1);
-                }
-            })
+            if(!mounted.current) {
+                mounted.current = true;
+                loadLogs();
+            }
 
             const artifact_insert_channel = supabase.channel(channel + "insert")
                 .on(
@@ -28,7 +27,14 @@ export const useLogs = (session: Session | null) => {
                         table: "logs"
                     },
                     (payload) => {
-                        setLogs(prevState => ([...prevState, payload.new as LogType]));
+                        setLogs(prevState => {
+                            const data = [payload.new as LogType, ...prevState];
+                            setHasMore(data.length > ITEMS_PER_PAGE);
+                            if(prevState.length > ITEMS_PER_PAGE) {
+                                data.pop();
+                            }
+                            return data;
+                        });
                     }
                 ).subscribe();
 
@@ -38,51 +44,39 @@ export const useLogs = (session: Session | null) => {
         }
     }, [session]);
 
-    const fetchTotalPages = async (): Promise<boolean> => {
-        const { count, error } = await supabase
-            .from('logs')
-            .select('*', { count: 'exact', head: true });
-        if (error) {
-            console.error('Error fetching total count:', error);
-            return false;
-        }
-
-        setTotalPages(Math.ceil((count ?? 0) / ITEMS_PER_PAGE));
-        return true;
-    }
-
-    const loadLogs = async (currentPage: number): Promise<ResponseType> => {
+    const loadLogs = async (): Promise<ResponseType & {hasMore: boolean}> => {
         setLoading(true);
-        const from = (currentPage - 1) * ITEMS_PER_PAGE;
-        const to = from + ITEMS_PER_PAGE - 1;
+        const from = logs.length;
+        const to = from + (ITEMS_PER_PAGE - 1);
 
         const { data, error } = await supabase
             .from('logs')
             .select('*')
+            .order('created_at', { ascending: false })
             .range(from, to);
-
         if (error) {
             console.error('Error fetching logs:', error);
         } else {
-            setLogs(data ?? []);
+            setLogs(prevState => [...prevState, ...data]);
             setLoading(false)
-            return {status: true, message: ""}
+            setHasMore(data && data.length === ITEMS_PER_PAGE);
+            return {status: true, message: "", hasMore: data && data.length == ITEMS_PER_PAGE}
         }
         setLoading(false);
-        return {status: false, message: "Error loading logs"}
+        return {status: false, message: "Error loading logs", hasMore: true}
     }
 
-    const onLoadPage = async (currentPage: number): Promise<ResponseType> => {
-        if(pages.includes(currentPage)) return {status: false, message: ""};
-        setPages(prevState => ([...prevState, currentPage]));
-        return loadLogs(currentPage);
+    const reset = () => {
+        mounted.current = false;
+        setLogs([]);
     }
 
     return {
         logs,
-        totalPages,
-        onLoadPage,
+        loadLogs,
         loading,
+        reset,
+        hasMore
     }
 }
 

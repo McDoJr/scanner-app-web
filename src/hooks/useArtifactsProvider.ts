@@ -22,7 +22,7 @@ export const useArtifactsProvider = (session: Session | null) => {
                         table: "artifacts"
                     },
                     (payload) => {
-                        setArtifacts(prevState => ([...prevState, payload.new as ArtifactType]));
+                        setArtifacts(prevState => ([payload.new as ArtifactType, ...prevState]));
                     }
                 ).subscribe();
 
@@ -49,7 +49,10 @@ export const useArtifactsProvider = (session: Session | null) => {
 
     const reloadArtifacts = async (): Promise<ResponseType> => {
         try {
-            const { data, error } = await supabase.from("artifacts").select("*");
+            const { data, error } = await supabase
+                .from("artifacts")
+                .select("*")
+                .order('created_at', {ascending: false});
             if(error) {
                 throw error;
             }

@@ -25,8 +25,8 @@ const Navigation = ({ children, name }: {children?: React.ReactNode, name: strin
     }
 
     return (
-        <div className="w-full h-screen flex bg-background relative">
-            <div className="h-screen w-[300px] flex flex-col py-10 px-14 bg-primary">
+        <div className="w-full min-h-screen flex bg-background relative pl-[300px]">
+            <div className="h-screen w-[300px] flex flex-col py-10 px-14 bg-primary fixed top-0 left-0">
                 <div className="bg-background w-[100px] h-[100px] mx-auto mb-20">
                     <img src={Logo} className="contain" />
                 </div>

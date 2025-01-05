@@ -8,9 +8,10 @@ export const AuthContext = createContext<AuthContextType>({
     signOut: async () => false,
     appLoading: true,
     logs: [],
-    totalPages: 1,
     loading: false,
-    onLoadPage: async (_) => ({status: false, message: ""})
+    loadLogs: async () => ({status: false, message: "", hasMore: true}),
+    reset: () => {},
+    hasMore: false
 });
 
 export type AuthContextType = {
@@ -18,7 +19,8 @@ export type AuthContextType = {
     signOut: () => Promise<boolean>,
     appLoading: boolean,
     logs: LogType[],
-    totalPages: number,
     loading: boolean,
-    onLoadPage: (currentPage: number) => Promise<ResponseType>
+    loadLogs: () => Promise<ResponseType & {hasMore: boolean}>,
+    reset: () => void,
+    hasMore: boolean
 }

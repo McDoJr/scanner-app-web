@@ -1,10 +1,12 @@
 import {useEffect, useState} from "react";
 import {Session} from "@supabase/supabase-js";
 import {supabase} from "../../supabase/supabase.ts";
+import {useLogs} from "./useLogs.ts";
 
 export const useAuthProvider = () => {
     const [session, setSession] = useState<Session | null>(null);
     const [appLoading, setAppLoading] = useState(true);
+    const logs = useLogs(session);
 
     useEffect(() => {
 
@@ -25,6 +27,7 @@ export const useAuthProvider = () => {
             console.log("Sign Out Error: ", error)
             return false;
         }
+        logs.reset();
         localStorage.removeItem("sb-chziasxekmfmmliuaqux-auth-token");
         return true;
     }
@@ -32,6 +35,7 @@ export const useAuthProvider = () => {
     return {
         session,
         signOut,
-        appLoading
+        appLoading,
+        ...logs
     }
 }

@@ -4,7 +4,7 @@ import Artifact from "../components/Artifact.tsx";
 import {useContext, useState} from "react";
 import ArtifactForm from "../components/ArtifactForm.tsx";
 import {DataContext} from "../context/dataContext.ts";
-import {FaChevronLeft, FaChevronRight} from "react-icons/fa";
+import {ArtifactType} from "../hooks/useArtifactsProvider.ts";
 
 const MuseumItems = () => {
 
@@ -12,28 +12,14 @@ const MuseumItems = () => {
     const [search, setSearch] = useState("");
     const items = artifacts.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
     const [formVisible, setFormVisible] = useState(false);
-    const totalPages = Math.ceil(items.length / 21);
-    const [page, setPage] = useState(1);
-    const pages = [page > 1 && page-1, page, page < totalPages && page+1];
+    const [artifact, setArtifact] = useState<ArtifactType | null>(null);
 
-    const getItems = () => {
-        if(page === 1) {
-            return items.slice(0, 21);
+    const itemsToRows = () => {
+        const datas: ArtifactType[][] = [];
+        for(let i = 0; i < items.length; i += 6) {
+            datas.push(items.slice(i, i + 6));
         }
-
-        return items.slice(21);
-    }
-
-    const next = () => {
-        if(page < totalPages) {
-            setPage(page + 1);
-        }
-    }
-
-    const previous = () => {
-        if(page > 1) {
-            setPage(page - 1);
-        }
+        return datas;
     }
 
     return (
@@ -49,24 +35,27 @@ const MuseumItems = () => {
                                 className="px-7 bg-primary py-3 h-full text-white hover:bg-primary/80 outline-none">Search
                         </button>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <FaChevronLeft size={18} className="cursor-pointer" onClick={previous}/>
-                        {pages.map((item, index) => {
-                            return <p className={`text-[18px] ${item === page ? "font-bold" : "text-zinc-300"}`}
-                                      key={index}>{item}</p>
-                        })}
-                        <FaChevronRight size={18} className="cursor-pointer" onClick={next}/>
-                    </div>
                     <div className="flex gap-10">
                         <button type="button" onClick={() => setFormVisible(true)}
                                 className="text-white bg-green-600 py-2 px-7 hover:bg-green-400">Upload
                         </button>
                     </div>
                 </div>
-                <div className="w-full h-full mt-14 flex flex-wrap gap-[20px]">
-                    {getItems().map((item, index) => (<Artifact artifact={item} key={index.toString()}/>))}
+                <div className="w-full h-full mt-10 flex flex-col">
+                    {itemsToRows().map((items, index) => (
+                        <div className={`w-full flex gap-[20px] ${index > 0 && 'mt-[20px]'}`} key={index}>
+                            {items.map((item, index) => <Artifact artifact={item} onClick={selected => setArtifact(selected)} key={index.toString()}/>)}
+                        </div>
+                    ))}
                 </div>
             </div>
+            {artifact && (
+                <div onClick={() => setArtifact(null)} className="w-full h-screen p-[50px] fixed top-0 left-0 flex justify-center items-center bg-black/80">
+                    <div className="h-full bg-white my-auto mx-auto overflow-hidden flex justify-center items-center" style={{aspectRatio: .9}}>
+                        <img src={artifact.avatar_url} className="object-contain" />
+                    </div>
+                </div>
+            )}
             {formVisible && <ArtifactForm close={() => setFormVisible(false)}/>}
         </Navigation>
     )
