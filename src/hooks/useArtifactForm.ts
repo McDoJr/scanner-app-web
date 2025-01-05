@@ -32,6 +32,8 @@ export const useArtifactForm = () => {
                 avatar = null;
             }
 
+            avatar = data.publicUrl;
+
             if(!avatar) {
                 return {status: false, message: "Failed uploading artifact. Please try again!"};
             }
