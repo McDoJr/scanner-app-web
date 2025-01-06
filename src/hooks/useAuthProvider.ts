@@ -24,7 +24,8 @@ export const useAuthProvider = () => {
     const signOut = async (): Promise<boolean> => {
         const {error} = await supabase.auth.signOut();
         if(error) {
-            console.log("Sign Out Error: ", error)
+            console.log("Sign Out Error: ", error);
+            localStorage.removeItem("sb-chziasxekmfmmliuaqux-auth-token");
             return false;
         }
         logs.reset();
