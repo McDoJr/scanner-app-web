@@ -16,8 +16,8 @@ const MuseumItems = () => {
 
     const itemsToRows = () => {
         const datas: ArtifactType[][] = [];
-        for(let i = 0; i < items.length; i += 6) {
-            datas.push(items.slice(i, i + 6));
+        for(let i = 0; i < items.length; i += 5) {
+            datas.push(items.slice(i, i + 5));
         }
         return datas;
     }
